@@ -11,24 +11,13 @@ public class TestWav {
 		int[][] data = reader.getData(in);
 		int channel = reader.getChannels();
 		int BitsPerSample = reader.getBitsPerSample();
-		if(channel > 1){
-			DrawDoubleWave dw = new DrawDoubleWave(data, BitsPerSample);
-			frame.add(dw); 
-	        frame.setTitle(fileName);  
-	        frame.setSize(800, 400);  
-	        frame.setLocationRelativeTo(null);  
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-	        frame.setVisible(true); 
-		}else{
-			DrawSingleWave dw = new DrawSingleWave(data[0], BitsPerSample);
-			frame.add(dw); 
-	        frame.setTitle(fileName);  
-	        frame.setSize(800, 400);  
-	        frame.setLocationRelativeTo(null);  
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-	        frame.setVisible(true); 
-		}
-		
+		DrawWave dw = new DrawWave(data, BitsPerSample, channel);
+		frame.add(dw); 
+	    frame.setTitle(fileName);  
+	    frame.setSize(800, 400);  
+	    frame.setLocationRelativeTo(null);  
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+	    frame.setVisible(true); 
 		
 	}
 }
