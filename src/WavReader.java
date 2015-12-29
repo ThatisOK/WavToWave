@@ -3,7 +3,7 @@ import java.io.*;
 public class WavReader {
 
 	private String fileName;
-	// private int data[][];
+	private int data[][];
 	/*
 	 * RIFF WAVE Chunk
 	 */
@@ -39,6 +39,88 @@ public class WavReader {
 	 */
 	private String dataId;
 	private long dataSize;
+	
+	public WavReader(){}
+	
+	public WavReader(String fileName){
+		try {
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
+			int len = 4;
+			this.riffID = this.getString(in, len);
+			System.out.println("RIFFID:" + this.riffID);
+			this.riffSize = this.getLong(in, len);
+			this.riffType = this.getString(in, len);
+			System.out.println("RIFF类型:" + this.riffType);
+			this.formatId = this.getString(in, len);
+			System.out.println("Format:" + this.formatId);
+			this.formatSize = this.getLong(in, len);
+			this.formatTag = this.getInt(in, 2);
+			this.setChannels(this.getInt(in, 2));
+			System.out.println("声道:" + this.channels);
+			this.SamplesPerSec = this.getLong(in, len);
+			System.out.println("采样频率:" + this.SamplesPerSec);
+			this.AvgBytesPerSec = this.getLong(in, len);
+			this.BlockAlign = this.getInt(in, 2);
+			this.BitsPerSample = this.getInt(in, 2);
+			System.out.println("采样位数:" + this.BitsPerSample);
+			this.Additional = 0;
+			if (this.factSize == 18) {
+				this.Additional = this.getInt(in, 2);
+			}
+			String s = this.getString(in, 4);
+			if(s.trim().equals("fa")){
+				this.factId = s + this.getString(in, 4);
+				System.out.println("FactId:"+factId);
+				this.factSize = this.getLong(in, len);
+				this.dataId = this.getString(in, 6);
+				System.out.println("DataID:" + this.dataId);
+				this.dataSize = this.getLong(in, len);
+				// System.out.println(this.dataSize);
+				int length = (int) (this.dataSize / (this.BitsPerSample / 8) / this.channels);
+				this.data = new int[this.channels][length];
+				for (int i = 0; i < length; i++) {
+					for (int j = 0; j < this.channels; j++) {
+						if (this.BitsPerSample == 8) {
+							try {
+								this.data[j][i] = in.read();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} else {
+							data[j][i] = this.getInt(in, 2);
+						}
+					}
+				}
+			}else{
+				this.dataId = s;
+				System.out.println("DataID:" + this.dataId);
+				this.dataSize = this.getLong(in, len);
+				// System.out.println(this.dataSize);
+				int length = (int) (this.dataSize / (this.BitsPerSample / 8) / this.channels);
+				this.data = new int[this.channels][length];
+				for (int i = 0; i < length; i++) {
+					for (int j = 0; j < this.channels; j++) {
+						if (this.BitsPerSample == 8) {
+							try {
+								this.data[j][i] = in.read();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} else{
+							data[j][i] = this.getInt(in, 2);
+						}
+					}
+				}
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public String getFileName() {
 		return fileName;
@@ -46,6 +128,14 @@ public class WavReader {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public int[][] getData() {
+		return data;
+	}
+
+	public void setData(int[][] data) {
+		this.data = data;
 	}
 
 	public String getRiffID() {
@@ -174,65 +264,6 @@ public class WavReader {
 
 	public void setDataSize(long dataSize) {
 		this.dataSize = dataSize;
-	}
-
-	public BufferedInputStream openWav(String fileName) {
-		BufferedInputStream in = null;
-		try {
-			in = new BufferedInputStream(new FileInputStream(fileName));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return in;
-	}
-
-	public int[][] getData(BufferedInputStream in) {
-		int[][] data = null;
-		int len = 4;
-		this.riffID = this.getString(in, len);
-		System.out.println("RIFFID:" + this.riffID);
-		this.riffSize = this.getLong(in, len);
-		this.riffType = this.getString(in, len);
-		System.out.println("RIFF类型:" + this.riffType);
-		this.formatId = this.getString(in, len);
-		System.out.println("Format:" + this.formatId);
-		this.formatSize = this.getLong(in, len);
-		this.formatTag = this.getInt(in, 2);
-		this.setChannels(this.getInt(in, 2));
-		System.out.println("声道:" + this.channels);
-		this.SamplesPerSec = this.getLong(in, len);
-		System.out.println("采样频率:" + this.SamplesPerSec);
-		this.AvgBytesPerSec = this.getLong(in, len);
-		this.BlockAlign = this.getInt(in, 2);
-		this.BitsPerSample = this.getInt(in, 2);
-		System.out.println("采样位数:" + this.BitsPerSample);
-		this.Additional = 0;
-		if (this.factSize == 18) {
-			this.Additional = this.getInt(in, 2);
-		}
-		this.dataId = this.getString(in, len);
-		System.out.println("DataID:" + this.dataId);
-		this.dataSize = this.getLong(in, len);
-		// System.out.println(this.dataSize);
-		int length = (int) (this.dataSize / (this.BitsPerSample / 8) / this.channels);
-		data = new int[this.channels][length];
-		for (int i = 0; i < length; i++) {
-			for (int j = 0; j < this.channels; j++) {
-				if (this.BitsPerSample == 8) {
-					try {
-						data[j][i] = in.read();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} else if (this.BitsPerSample == 16) {
-					data[j][i] = this.getInt(in, 2);
-				}
-			}
-		}
-		return data;
-
 	}
 
 	public String getString(BufferedInputStream in, int len) {

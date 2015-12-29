@@ -20,6 +20,7 @@ public class DrawWave extends JPanel {
 		g.fillRect(0, 0, width, height);
 		if (this.channel > 1) {
 			int length = data[0].length;
+			System.out.println("length:"+length);
 			int prex = 0;
 			int prey = 0;
 			int x = 0;
@@ -33,6 +34,10 @@ public class DrawWave extends JPanel {
 					y = data[0][i * k];
 				else if (this.BitsPerSample == 16)
 					y = height - (int) (data[0][i * k] / 200 + height / 2);
+				else if (this.BitsPerSample == 32){
+					y = height - (int) (data[0][i * k] / 200 + height / 2);
+				}
+					
 				if (i != 0) {
 					g.drawLine(x, y, prex, prey);
 				}
@@ -51,6 +56,8 @@ public class DrawWave extends JPanel {
 					y = data[1][i * k];
 				else if (this.BitsPerSample == 16)
 					y = height - (int) (data[1][i * k] / 200 + height / 2);
+				else if (this.BitsPerSample == 32)
+					y = height - (int) (data[1][i * k] / 200 + height / 2);
 				if (i != 0) {
 					g.drawLine(x, y, prex, prey);
 				}
@@ -59,6 +66,7 @@ public class DrawWave extends JPanel {
 			}
 		} else {
 			int length = data[0].length;
+			System.out.println("length:"+length);
 			int prex = 0;
 			int prey = 0;
 			int x = 0;
@@ -81,21 +89,22 @@ public class DrawWave extends JPanel {
 		}
 	}
 
-	// public static void main(String[] args){
-	// String fileName =
-	// "/Users/mengchun/Downloads/WaveAccess-master/rawwavs/wav_40_16_1_pcm.wav";
-	// JFrame frame = new JFrame();
-	// WavReader reader = new WavReader();
-	// BufferedInputStream in = reader.openWav(fileName);
-	// int[] data = reader.getData(in)[0];
-	// DrawWave dw = new DrawWave(data);
-	// frame.add(dw);
-	// frame.setTitle(fileName);
-	// frame.setSize(800, 400);
-	// frame.setLocationRelativeTo(null);
-	// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	// frame.setVisible(true);
-	//
-	// }
+	 public static void main(String[] args){
+		 String fileName = System.getProperty("user.dir") + "/src/wav/喂喂喂.wav";
+		 JFrame frame = new JFrame();
+		 WavReader reader = new WavReader(fileName);
+		 
+		 int[][] data = reader.getData();
+		 int channel = reader.getChannels();
+		 int BitsPerSample = reader.getBitsPerSample();
+		 DrawWave dw = new DrawWave(data, BitsPerSample, channel);
+		 frame.add(dw);
+		 frame.setTitle(fileName);
+		 frame.setSize(800, 400);
+		 frame.setLocationRelativeTo(null);
+		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		 frame.setVisible(true);
+	
+	 }
 
 }

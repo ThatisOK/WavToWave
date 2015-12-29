@@ -51,9 +51,8 @@ public class Main extends JFrame implements ActionListener {
 	}
 
 	public void drawWave(String filename) {
-		WavReader reader = new WavReader();
-		BufferedInputStream in = reader.openWav(filename);
-		int[][] data = reader.getData(in);
+		WavReader reader = new WavReader(filename);
+		int[][] data = reader.getData();
 		int channel = reader.getChannels();
 		int BitsPerSample = reader.getBitsPerSample();
 		DrawWave dw = new DrawWave(data, BitsPerSample, channel);
